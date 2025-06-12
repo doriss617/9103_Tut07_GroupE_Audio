@@ -1,6 +1,6 @@
 ## Audio-Reactive “Flow of Life”
 
-This artwork is an audio‑reactive generative animation that translates the track’s melody and flow into a visual mandala of rotating rays, breathing blobs and drifting sparks. Each layer responds to distinct spectral bands, so the composition pulses, brightens and contracts in time with the music, which mirrors the cyclical nature of life, fate, and memory.
+This artwork is an audio‑reactive generative animation that translates a musical track’s melody and flow into a visual mandala of rotating rays, breathing blobs and drifting sparks. Each layer responds to distinct spectral bands, so the composition pulses, brightens and contracts in time with the music, which mirrors the cyclical nature of life, fate, and memory.
 
 ---
 
