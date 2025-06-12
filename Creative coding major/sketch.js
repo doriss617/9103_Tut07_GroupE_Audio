@@ -116,7 +116,7 @@ class NoiseBlob {
     let mf = map(midEnergy, 0, 255, 0.8, 1.2);                       // minor reflection
     this.r = baseR * mf;
 
-    // 色彩与亮度随谱质心变化
+    // colour brightness
     let w = map(centroid, 0, 22050, 0, 1);
     let highlight = color(255, 255, 200, this.alpha);
     this.c = lerpColor(this.baseColor, highlight, w);
@@ -147,7 +147,7 @@ class NoiseBlob {
   }
 }
 
-// Radiant 类
+// Radiant 
 class Radiant {
   constructor() {
     this.x = random(width);
