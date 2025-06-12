@@ -38,7 +38,7 @@ function setup() {
   for (let i = 0; i < 30; i++) blobs.push(new NoiseBlob());
   for (let i = 0; i < 25; i++) radiants.push(new Radiant());
   for (let i = 0; i < 20; i++) holes.push(new Hole());
-  for (let i = 0; i < 50; i++) sparks.push(new Spark()); // 增加粒子数
+  for (let i = 0; i < 50; i++) sparks.push(new Spark()); 
 }
 
 function draw() {
@@ -61,7 +61,7 @@ function draw() {
   image(bgTexture, 0, 0);
   let t = constrain(centroid / 22050, 0, 1);
   let br = map(t, 0, 1, 0, 200);
-  fill(0, 0, br, 60);  // Alpha 增强
+  fill(0, 0, br, 60);  
   rect(0, 0, width, height);
 
   // graphics blending
@@ -112,8 +112,8 @@ class NoiseBlob {
 
   update(midEnergy, centroid) {
     this.phase += this.speed;
-    let baseR = this.rBase + sin(this.phase) * (10 * this.depth);  // 缩小变动幅度
-    let mf = map(midEnergy, 0, 255, 0.8, 1.2);                       // 小幅度映射
+    let baseR = this.rBase + sin(this.phase) * (10 * this.depth);  // Reduce the magnitude of changes
+    let mf = map(midEnergy, 0, 255, 0.8, 1.2);                       // minor reflection
     this.r = baseR * mf;
 
     // 色彩与亮度随谱质心变化
@@ -154,7 +154,7 @@ class Radiant {
     this.y = random(height);
     this.r = random(20, 60);
     this.n = int(random(30, 120));
-    this.alpha = random(30, 100);  // 暗一点
+    this.alpha = random(30, 100);  
     this.angle = random(TWO_PI);
     this.rotSpeed = random(0.001, 0.03);
     this.lineLength = random(20, 60);
@@ -166,7 +166,7 @@ class Radiant {
   }
 
   update(midEnergy, centroid) {
-    let spf = map(centroid, 0, 22050, 0.1, 4);  // 扩大旋转速率范围
+    let spf = map(centroid, 0, 22050, 0.1, 4);  // increase spinning
     this.angle += this.rotSpeed * spf;
 
     this.pulsePhase += this.pulseSpeed;
@@ -179,7 +179,7 @@ class Radiant {
     push();
     translate(this.x, this.y);
     rotate(this.angle);
-    let sa = this.alpha * map(this.depth, 0, 1, 0.4, 0.8);  // 更暗
+    let sa = this.alpha * map(this.depth, 0, 1, 0.4, 0.8); 
     for (let i = 0; i < this.n; i++) {
       let a  = TWO_PI * i / this.n;
       let x1 = cos(a) * this.r, y1 = sin(a) * this.r;
@@ -197,7 +197,7 @@ class Radiant {
   }
 }
 
-// Hole 类（不变）
+// Hole
 class Hole {
   constructor() {
     this.x = random(width);
@@ -226,7 +226,7 @@ class Hole {
   }
 }
 
-// Spark 类
+// Spark 
 class Spark {
   constructor() {
     this.reset();
@@ -257,11 +257,11 @@ class Spark {
   }
 
   show(volLevel, centroid) {
-    let vNorm = constrain(volLevel / 255 + 0.3, 0, 1); // 提高基线
+    let vNorm = constrain(volLevel / 255 + 0.3, 0, 1); 
     if (random() > vNorm) return;
 
     let s = this.size * map(volLevel, 0, 255, 0.5, 6);
-    s *= map(centroid, 0, 22050, 0.8, 1.2);       // 旋律影响大小
+    s *= map(centroid, 0, 22050, 0.8, 1.2);     
     let a = this.baseAlpha * map(volLevel, 0, 255, 0.5, 1);
 
     if (this.type === "line") {
