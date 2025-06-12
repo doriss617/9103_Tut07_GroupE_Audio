@@ -22,7 +22,7 @@
 
 I chose the track **“Town, Flow of Time, People”** from the animation Clannad to reflect the cyclical nature of the chosen artwork. Its slow tempo, soft harp, woodwinds, and ambient textures mirror the passage of time and the quiet rhythm of fate. The music evokes a sense of stillness and continuity—where towns fade, people change, yet life quietly endures and returns.
 
-By pairing this track with motion, the digital canvas gains emotional depth: the wheel turns, elements rise and fade, and the whole scene *breathes* in sync with its theme of *Wheels of Fortune*.
+By pairing this track with motion stimulates emotional depth: as the wheel turns, elements rise and fade, and the whole scene *breathes* in sync with its theme of *Wheels of Fortune*.
 
 ![Town, Flow of Time, People - Clannad](assets/clannad.jpg)
 ---
