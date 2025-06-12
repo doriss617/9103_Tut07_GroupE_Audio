@@ -13,9 +13,43 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(900, 900);
+  createCanvas(windowWidth, windowHeight);
   noStroke();
+  colorMode(RGB);
+// function resize
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  calculateImageDrawProps();
+}
+
+function calculateImageDrawProps() {
+  //Calculate the aspect ratio of the canvas
+  canvasAspectRatio = width / height;
+  //If the image is wider than the canvas
+  if (imgDrwPrps.aspect > canvasAspectRatio) {
+    //then we will draw the image to the width of the canvas
+    imgDrwPrps.width = width;
+    //and calculate the height based on the aspect ratio
+    imgDrwPrps.height = width / imgDrwPrps.aspect;
+    imgDrwPrps.yOffset = (height - imgDrwPrps.height) / 2;
+    imgDrwPrps.xOffset = 0;
+  } else if (imgDrwPrps.aspect < canvasAspectRatio) {
+    //Otherwise, we will draw the image to the height of the canvas
+    imgDrwPrps.height = height;
+    //and calculate the width based on the aspect ratio
+    imgDrwPrps.width = height * imgDrwPrps.aspect;
+    imgDrwPrps.xOffset = (width - imgDrwPrps.width) / 2;
+    imgDrwPrps.yOffset = 0;
+  }
+  else if (imgDrwPrps.aspect == canvasAspectRatio) {
+    //If the aspect ratios are the same then we can draw the image to the canvas size
+    imgDrwPrps.width = width;
+    imgDrwPrps.height = height;
+    imgDrwPrps.xOffset = 0;
+    imgDrwPrps.yOffset = 0;
+  }
+}
   // background
   bgTexture = createGraphics(width, height);
   createTexture(bgTexture);
@@ -116,7 +150,7 @@ class NoiseBlob {
     let mf = map(midEnergy, 0, 255, 0.8, 1.2);                       // minor reflection
     this.r = baseR * mf;
 
-    // colour brightness
+    // 色彩与亮度随谱质心变化
     let w = map(centroid, 0, 22050, 0, 1);
     let highlight = color(255, 255, 200, this.alpha);
     this.c = lerpColor(this.baseColor, highlight, w);
@@ -147,7 +181,7 @@ class NoiseBlob {
   }
 }
 
-// Radiant 
+// Radiant 类
 class Radiant {
   constructor() {
     this.x = random(width);
