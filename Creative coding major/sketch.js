@@ -1,57 +1,34 @@
+const BASE_SIZE = 900;
+let scaleFactor;
+let offsetX, offsetY;
+let bgTexture;
 
 let blobs = [];
 let radiants = [];
 let holes = [];
 let sparks = [];
-let bgTexture;
 
 let song, fft, amp, peak;
 let flashAlpha = 0;
+
+function calculateScale() {
+  // scale to screen
+  scaleFactor = max(windowWidth / BASE_SIZE, windowHeight / BASE_SIZE);
+  offsetX = (windowWidth - BASE_SIZE * scaleFactor) / 2;
+  offsetY = (windowHeight - BASE_SIZE * scaleFactor) / 2;
+}
 
 function preload() {
   song = loadSound('assets/music3.mp3');
 }
 
 function setup() {
+  calculateScale();
   createCanvas(windowWidth, windowHeight);
   noStroke();
-  colorMode(RGB);
-// function resize
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  calculateImageDrawProps();
-}
-
-function calculateImageDrawProps() {
-  //Calculate the aspect ratio of the canvas
-  canvasAspectRatio = width / height;
-  //If the image is wider than the canvas
-  if (imgDrwPrps.aspect > canvasAspectRatio) {
-    //then we will draw the image to the width of the canvas
-    imgDrwPrps.width = width;
-    //and calculate the height based on the aspect ratio
-    imgDrwPrps.height = width / imgDrwPrps.aspect;
-    imgDrwPrps.yOffset = (height - imgDrwPrps.height) / 2;
-    imgDrwPrps.xOffset = 0;
-  } else if (imgDrwPrps.aspect < canvasAspectRatio) {
-    //Otherwise, we will draw the image to the height of the canvas
-    imgDrwPrps.height = height;
-    //and calculate the width based on the aspect ratio
-    imgDrwPrps.width = height * imgDrwPrps.aspect;
-    imgDrwPrps.xOffset = (width - imgDrwPrps.width) / 2;
-    imgDrwPrps.yOffset = 0;
-  }
-  else if (imgDrwPrps.aspect == canvasAspectRatio) {
-    //If the aspect ratios are the same then we can draw the image to the canvas size
-    imgDrwPrps.width = width;
-    imgDrwPrps.height = height;
-    imgDrwPrps.xOffset = 0;
-    imgDrwPrps.yOffset = 0;
-  }
-}
   // background
-  bgTexture = createGraphics(width, height);
+  bgTexture = createGraphics(BASE_SIZE, BASE_SIZE);
   createTexture(bgTexture);
 
   // sound analysis
@@ -67,42 +44,73 @@ function calculateImageDrawProps() {
   let btn = createButton('Play/Pause');
   btn.position(10, 10);
   btn.mousePressed(() => song.isPlaying() ? song.stop() : song.loop());
+  btn.style('font-size', '16px'); 
+  btn.style('padding', '10px 20px');
+  btn.style('background-color', '#444');
+  btn.style('color', '#fff');
+  btn.style('border', 'none');
+  btn.style('border-radius', '5px');
+  btn.style('cursor', 'pointer');
+  btn.mouseOver(() => btn.style('background-color', '#555'));
+  btn.mouseOut(() => btn.style('background-color', '#444'));
+  btn.mousePressed(() => {
+    if (song.isPlaying()) {
+      song.pause();
+    } else {
+      song.loop();
+    }
+  });
 
-  // objects initialization
+
+  // initialize objects
   for (let i = 0; i < 30; i++) blobs.push(new NoiseBlob());
   for (let i = 0; i < 25; i++) radiants.push(new Radiant());
   for (let i = 0; i < 20; i++) holes.push(new Hole());
-  for (let i = 0; i < 50; i++) sparks.push(new Spark()); 
+  for (let i = 0; i < 50; i++) sparks.push(new Spark());
 }
 
 function draw() {
-  // analyse sound
   fft.analyze();
   peak.update(fft);
   let midEnergy = fft.getEnergy(200, 2000);
   let centroid  = fft.getCentroid();
   let volLevel  = amp.getLevel() * 255;
 
-  // light reflecting drum effect
+  background(0);
+  push();
+  //centre and scale to fill screen
+  translate(offsetX, offsetY);
+  scale(scaleFactor);
+
+  // flash effect
   if (peak.isDetected) flashAlpha = 100;
   if (flashAlpha > 0) {
     fill(255, flashAlpha);
-    rect(0, 0, width, height);
+    rect(0, 0, BASE_SIZE, BASE_SIZE);
     flashAlpha -= 5;
   }
 
-  // background and overlay
+  // draw background texture
   image(bgTexture, 0, 0);
+
+  // overlay
   let t = constrain(centroid / 22050, 0, 1);
   let br = map(t, 0, 1, 0, 200);
-  fill(0, 0, br, 60);  
-  rect(0, 0, width, height);
+  fill(0, 0, br, 60);
+  rect(0, 0, BASE_SIZE, BASE_SIZE);
 
-  // graphics blending
+  // draw elements
   for (let h of holes) h.show();
   for (let b of blobs)    { b.update(midEnergy, centroid); b.show(); }
   for (let r of radiants) { r.update(midEnergy, centroid); r.show(); }
   for (let s of sparks)   { s.update(); s.show(volLevel, centroid); }
+
+  pop();
+}
+
+function windowResized() {
+  calculateScale();
+  resizeCanvas(windowWidth, windowHeight);
 }
 
 // bg texture
@@ -110,14 +118,14 @@ function createTexture(g) {
   g.background(0);
   g.noStroke();
   for (let i = 0; i < 10000; i++) {
-    let x = random(width), y = random(height);
+    let x = random(BASE_SIZE), y = random(BASE_SIZE);
     let s = random(0.5, 2), a = random(5, 15);
     g.fill(30, 20, 40, a);
     g.ellipse(x, y, s);
   }
   g.stroke(40, 30, 50, 10);
   for (let i = 0; i < 50; i++) {
-    let x1 = random(width), y1 = random(height);
+    let x1 = random(BASE_SIZE), y1 = random(BASE_SIZE);
     let x2 = x1 + random(-100, 100), y2 = y1 + random(-100, 100);
     g.line(x1, y1, x2, y2);
   }
@@ -126,9 +134,10 @@ function createTexture(g) {
 // NoiseBlob 
 class NoiseBlob {
   constructor() {
-    this.x = random(width);
-    this.y = random(height);
-    this.rBase = random(20, 120);
+    this.x = random(BASE_SIZE);
+    this.y = random(BASE_SIZE);
+    // base radius and properties
+    this.rBase = random(20, 120) / 1.5;
     this.alpha = random(30, 120);
     this.phase = random(TWO_PI);
     this.speed = random(0.003, 0.01);
@@ -146,11 +155,11 @@ class NoiseBlob {
 
   update(midEnergy, centroid) {
     this.phase += this.speed;
-    let baseR = this.rBase + sin(this.phase) * (10 * this.depth);  // Reduce the magnitude of changes
-    let mf = map(midEnergy, 0, 255, 0.8, 1.2);                       // minor reflection
+    let baseR = this.rBase + sin(this.phase) * (10 * this.depth);
+    let mf = map(midEnergy, 0, 255, 0.8, 1.2);
     this.r = baseR * mf;
 
-    // 色彩与亮度随谱质心变化
+    // colour brightness
     let w = map(centroid, 0, 22050, 0, 1);
     let highlight = color(255, 255, 200, this.alpha);
     this.c = lerpColor(this.baseColor, highlight, w);
@@ -158,8 +167,8 @@ class NoiseBlob {
 
     this.x += map(noise(frameCount * this.noiseScale, 0), -1, 1, -0.5, 0.5);
     this.y += map(noise(0, frameCount * this.noiseScale), -1, 1, -0.5, 0.5);
-    this.x = (this.x + width) % width;
-    this.y = (this.y + height) % height;
+    this.x = (this.x + BASE_SIZE) % BASE_SIZE;
+    this.y = (this.y + BASE_SIZE) % BASE_SIZE;
   }
 
   show() {
@@ -181,11 +190,11 @@ class NoiseBlob {
   }
 }
 
-// Radiant 类
+// Radiant 
 class Radiant {
   constructor() {
-    this.x = random(width);
-    this.y = random(height);
+    this.x = random(BASE_SIZE);
+    this.y = random(BASE_SIZE);
     this.r = random(20, 60);
     this.n = int(random(30, 120));
     this.alpha = random(30, 100);  
@@ -200,7 +209,7 @@ class Radiant {
   }
 
   update(midEnergy, centroid) {
-    let spf = map(centroid, 0, 22050, 0.1, 4);  // increase spinning
+    let spf = map(centroid, 0, 22050, 0.1, 4);
     this.angle += this.rotSpeed * spf;
 
     this.pulsePhase += this.pulseSpeed;
@@ -213,7 +222,7 @@ class Radiant {
     push();
     translate(this.x, this.y);
     rotate(this.angle);
-    let sa = this.alpha * map(this.depth, 0, 1, 0.4, 0.8); 
+    let sa = this.alpha * map(this.depth, 0, 1, 0.4, 0.8);
     for (let i = 0; i < this.n; i++) {
       let a  = TWO_PI * i / this.n;
       let x1 = cos(a) * this.r, y1 = sin(a) * this.r;
@@ -234,8 +243,8 @@ class Radiant {
 // Hole
 class Hole {
   constructor() {
-    this.x = random(width);
-    this.y = random(height);
+    this.x = random(BASE_SIZE);
+    this.y = random(BASE_SIZE);
     this.r = random(5, 12);
     this.depth = random(1);
     this.innerR = this.r * random(0.3, 0.7);
@@ -260,7 +269,7 @@ class Hole {
   }
 }
 
-// Spark 
+// Spark
 class Spark {
   constructor() {
     this.reset();
@@ -270,8 +279,8 @@ class Spark {
   }
 
   reset() {
-    this.x = random(width);
-    this.y = random(height);
+    this.x = random(BASE_SIZE);
+    this.y = random(BASE_SIZE);
     this.vx = random(-1.5, 1.5);
     this.vy = random(-1.5, 1.5);
     this.size = random(1, 4);
@@ -285,17 +294,17 @@ class Spark {
     this.x += this.vx;
     this.y += this.vy;
     this.age++;
-    if (this.age > this.life || this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+    if (this.age > this.life || this.x < 0 || this.x > BASE_SIZE || this.y < 0 || this.y > BASE_SIZE) {
       this.reset();
     }
   }
 
   show(volLevel, centroid) {
-    let vNorm = constrain(volLevel / 255 + 0.3, 0, 1); 
+    let vNorm = constrain(volLevel / 255 + 0.3, 0, 1);
     if (random() > vNorm) return;
 
     let s = this.size * map(volLevel, 0, 255, 0.5, 6);
-    s *= map(centroid, 0, 22050, 0.8, 1.2);     
+    s *= map(centroid, 0, 22050, 0.8, 1.2);
     let a = this.baseAlpha * map(volLevel, 0, 255, 0.5, 1);
 
     if (this.type === "line") {
@@ -307,7 +316,6 @@ class Spark {
         this.x + cos(ang) * s * 4,
         this.y + sin(ang) * s * 4
       );
-
     } else {
       noStroke();
       fill(255, a);
