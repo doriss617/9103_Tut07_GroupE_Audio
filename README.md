@@ -29,15 +29,23 @@ By pairing this track with motion, it stimulates emotional depth: as the wheel t
 ![Town, Flow of Time, People - Clannad](assets/clannad.jpg)
 ---
 
-## Multi‑layer animation & audio mapping
+## Audio‑visual mapping 
+To reflect the themes of Clannad’s track and the Wheel of Fortune artwork, the code maps audio features directly to visual elements that represent time, fate, and the cyclical nature of life.
 
-| Layer         | Audio input (p5.FFT / helpers)                       | Behaviour (per frame)                                      | Conceptual link                    |
-| ------------- | ---------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------- |
-| **NoiseBlob** | Mid‑band energy (200 – 2 000 Hz) & spectral centroid | Radius scales 0.8–1.2 ×; hue shifts dusk‑gold → pale light | Living cells riding fortune’s tide |
-| **Radiant**   | Spectral centroid                                    | Rotation 0.1–4 ×; ray length & core pulse vary             | Wheel spokes of destiny            |
-| **Spark**     | Overall amplitude                                    | Spawn rate, size, tail length rise on loud peaks           | Fleeting strokes of luck           |
-| **Flash**     | PeakDetect on 200 – 2 000 Hz                         | One‑frame white overlay on each strong beat                | Sudden twists of fate              |
-| **Canvas**    | `windowResized()` event                              | Uniform scale & centring via `calculateScale()`            | Fate’s wheel always centred        |
+1. **Audio‑visual coupling** Using p5.FFT and p5.Amplitude, I capture three sound features in each frame: energy in the middle frequencies, the average pitch (spectral centroid), and sudden volume spikes (peaks). These are mapped to different visual elements:
+– NoiseBlobs change size and color with the energy,
+– Radiants spin faster and shine brighter as pitch increases,
+– Sparks appear more often and leave longer trails when the volume peaks.
+This makes the scene move in sync with the music’s rhythm, pitch, and loudness—like life flowing through time.
+
+2. **Peak‑trigger highlights**  Using p5.PeakDetect, loud hits in the 200–2000 Hz range trigger a white flash across the screen. These flashes feel like camera flashes or stage lights, marking important beats that symbolise moments of life or fate.
+
+3. **Multi‑form particles & trails**  Spark particles change form depending on the sound:
+– High-pitched sounds create long, fading trails (like shooting stars),
+– Low sounds create small, still dust (like particles in the air).
+These changes reflect how sound density and motion shift over time, reflecting the flow of time.
+
+4. **Visual & aesthetics**  The design uses soft gold tones layered over a grainy background to create a sense of spatial depth, making the scene feel more grounded and immersive. A custom Play/Pause button complements the overall visual style, contributing to a cohesive and polished aesthetic.
 
 ---
 
@@ -49,18 +57,6 @@ By pairing this track with motion, it stimulates emotional depth: as the wheel t
 * **Audio pipeline** – `p5.FFT`, `Amplitude`, and `PeakDetect` run each frame; their outputs are linearly mapped to size, hue, rotation, spawn probability, and flash alpha.
 * **Tempo‑noise blend** – During quiet passages, motion falls back to smooth `frameCount`‑driven `sin()` and Perlin `noise()` values so that the scene never freezes.
 * **Modular classes** – `NoiseBlob`, `Radiant`, `Hole`, and `Spark` each own an `update()` and `show()` method; clear separation makes later extensions trivial.
-
----
-
-## Differences from group baseline
-
-| Aspect            | Group baseline (static demo) | My individual submission                                         |
-| ----------------- | ---------------------------- | ---------------------------------------------------------------- |
-| Audio integration | None                         | Real‑time FFT, amplitude & peak analysis map directly to visuals |
-| Interaction       | Fixed 900×900 canvas         | Auto‑scales to any screen; full‑screen immersive mode            |
-| Visual depth      | Single layer                 | Multi‑layered buffers with additive bloom & background texture   |
-| Motion logic      | Timer‑based loops            | Sound‑driven + tempo‑noise hybrid for continuous motion          |
-| Code architecture | Single sketch file           | ES6 classes with JSDoc comments for each element                 |
 
 ---
 
