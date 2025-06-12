@@ -15,7 +15,6 @@
    * drifting **sparks** leave faint tails,
    * brief **flashes** appear on every accented beat.
 
-(All visuals rescale automatically to fit any window while keeping a 1 : 1 composition.)
 
 ---
 
