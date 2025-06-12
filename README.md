@@ -1,4 +1,6 @@
-# Project README – Audio-Reactive “Wheel of Fortune” Visualisation
+## Audio-Reactive “Flow of Life”
+
+This piece is an audio‑reactive generative animation that translates the track’s melody and flow into a visual mandala of rotating rays, breathing blobs and drifting sparks. Each layer responds to distinct spectral bands, so the composition pulses, brightens and contracts in time with the music, which mirrors the cyclical nature of life, fate, and memory.
 
 ---
 
@@ -20,9 +22,9 @@
 
 ## Individual approach – why audio?
 
-I chose the track **“Town, Flow of Time, People”** from the animation Clannad to reflect the cyclical nature of the chosen artwork. Its slow tempo, soft harp, woodwinds, and ambient textures mirror the passage of time and the quiet rhythm of fate. The music evokes a sense of stillness and continuity—where towns fade, people change, yet life quietly endures and returns.
+I chose the track **“Town, Flow of Time, People”** from the animation series Clannad to reflect the cyclical nature of the selected artwork inspiration. The slow tempo, soft harp, woodwinds, and ambient textures of the piece mirror the passage of time and the quiet rhythm of fate. The music evokes a sense of stillness and continuity, where towns fade, people change, yet life quietly endures and returns(reflecting the song name).
 
-By pairing this track with motion stimulates emotional depth: as the wheel turns, elements rise and fade, and the whole scene *breathes* in sync with its theme of *Wheels of Fortune*.
+By pairing this track with motion, it stimulates emotional depth: as the wheel turns, elements rise and fade, and the whole scene *breathes* in harmonies with the theme of *Wheels of Fortune*.
 
 ![Town, Flow of Time, People - Clannad](assets/clannad.jpg)
 ---
