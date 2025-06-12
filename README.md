@@ -1,69 +1,71 @@
-# Audio-Driven Kinetic Composition  
-**Individual Extension of Group Baseline**
-
-## 1 Project Context
-This repository contains two *p5.js* sketches:
-
-| File | Purpose |
-|------|---------|
-| **`sketch (1).js`** | Group baseline—static, non-interactive visual. |
-| **`sketch.js`** | Individual extension—adds real-time audio analysis, multilayer animation, and responsive layout. |
-
-The extension explores how auditory data can govern procedural imagery, thereby translating musical structure into visual motion.
+# Project README – Audio-Reactive “Wheel of Fortune” Visualisation
 
 ---
 
-## 2 Interaction Guide
-1. Open a local server (e.g., `python -m http.server 8000`) in the project root.  
-2. Navigate to `http://localhost:8000` in any modern browser.  
-3. Click **Play/Pause** to start or stop the soundtrack.  
-4. Resize the browser window— the canvas rescales automatically while preserving a 1 : 1 aspect ratio.
+## How to run and interact
+
+1. **Open the folder in Visual Studio Code**
+2. Right‑click `index.html` → **“Open with Live Server.”**
+3. Page opens full‑screen; music is paused at first load.
+4. Click **Play / Pause** (top‑left).
+5. While the track plays, observe how
+
+   * softly glowing **blobs** breathe in and out,
+   * **radiant** spokes rotate and pulse,
+   * drifting **sparks** leave faint tails,
+   * brief **flashes** appear on every accented beat.
+
+(All visuals rescale automatically to fit any window while keeping a 1 : 1 composition.)
 
 ---
 
-## 3 Individual Animation Concept
+## Individual approach – why audio?
 
-### 3.1 Motivation
-As a lifelong music enthusiast, I wished to let sound “paint” the canvas.  The chosen track, **Clannad – “Town, Flow of Time, People”**, aligns conceptually with the artwork *Wheels of Fortune*: both contemplate cyclical fate, temporal flux, and the quiet persistence of life.  By coupling spectral data to geometry, colour, and luminosity, the composition visualises these ideas in motion.
+I chose the track **“Town, Flow of Time, People”** to reflect the cyclical nature of the artwork. Its slow tempo, soft harp, woodwinds, and ambient textures mirror the passage of time and the quiet rhythm of fate. The music evokes a sense of stillness and continuity—where towns fade, people change, yet life quietly endures and returns.
 
-### 3.2 Music–Artwork Resonance  
-*Town, Flow of Time, People* bears a slow, contemplative tempo.  Ethereal harp, flowing woodwinds, and ambient pads evoke gentle inevitability—the very sentiment embedded in *Wheels of Fortune*.  My animation echoes this by:
+By pairing this track with motion, the digital canvas gains emotional depth: the wheel turns, elements rise and fade, and the whole scene *breathes* in sync with its theme of *Wheels of Fortune*.
 
-* **Smooth, unhurried global rotation** → passage of time.  
-* **Subtle hue shifts** → changing yet recurring destinies.  
-* **Pulse-driven flashes** → pivotal moments on fortune’s wheel.
+![Town, Flow of Time, People - Clannad](assets/clannad.jpg)
+---
+
+## Multi‑layer animation & audio mapping
+
+| Layer         | Audio input (p5.FFT / helpers)                       | Behaviour (per frame)                                      | Conceptual link                    |
+| ------------- | ---------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------- |
+| **NoiseBlob** | Mid‑band energy (200 – 2 000 Hz) & spectral centroid | Radius scales 0.8–1.2 ×; hue shifts dusk‑gold → pale light | Living cells riding fortune’s tide |
+| **Radiant**   | Spectral centroid                                    | Rotation 0.1–4 ×; ray length & core pulse vary             | Wheel spokes of destiny            |
+| **Spark**     | Overall amplitude                                    | Spawn rate, size, tail length rise on loud peaks           | Fleeting strokes of luck           |
+| **Flash**     | PeakDetect on 200 – 2 000 Hz                         | One‑frame white overlay on each strong beat                | Sudden twists of fate              |
+| **Canvas**    | `windowResized()` event                              | Uniform scale & centring via `calculateScale()`            | Fate’s wheel always centred        |
 
 ---
 
-## 4 Animated Properties and Differentiation
+## Technical implementation
 
-| Visual Layer | Audio Feature | Parameter(s) Controlled | Distinction from Other Members |
-|--------------|---------------|-------------------------|--------------------------------|
-| **Global Flash** | Peak detection (200–2000 Hz) | Alpha → 0 – 100 | Only my version uses frame-wide white flashes to mark drum hits. |
-| **Noise Blobs** | Mid-band energy & spectral centroid | Radius, hue, brightness | Others adjust blob size only; I couple both size and colour to pitch. |
-| **Radiant Spokes** | Spectral centroid & mid-band energy | Angular velocity, spoke length | My spokes accelerate with higher pitch, whereas peers alter colour. |
-| **Spark Particles** | Amplitude & centroid | Spawn probability, tail length | Peers use static particles; mine grow dense and leave trails in climaxes. |
-| **Colour Wash** | Spectral centroid | Blue → gold filter opacity | Unique global tint responsive to melodic register. |
-
----
-
-## 5 Inspirational References  
-| Reference | Type | Influence |
-|-----------|------|-----------|
-| ![Generative wheel](docs/reference-wheel.gif) | GIF | Suggested radial spoke metaphor for destiny. |
-| ![Harp shimmer](docs/reference-harp.jpg) | Still | Guided choice of soft gold-pink palette. |
-| ![Audio-reactive nebula](docs/reference-nebula.gif) | GIF tutorial | Introduced additive blending for spark trails. |
+* **Layered canvases** – `createGraphics()` draws a grainy background texture on a hidden buffer, then blends it over the main canvas.
+* **Additive glow** – `drawingContext.globalCompositeOperation = "lighter"` is toggled for deep elements to achieve realistic light bloom.
+* **Responsive full‑screen** – `calculateScale()` finds the larger ratio of `windowWidth / 900` or `windowHeight / 900`, applies a uniform `scale()`, and stores `offsetX / offsetY` for centred drawing.
+* **Audio pipeline** – `p5.FFT`, `Amplitude`, and `PeakDetect` run each frame; their outputs are linearly mapped to size, hue, rotation, spawn probability, and flash alpha.
+* **Tempo‑noise blend** – During quiet passages, motion falls back to smooth `frameCount`‑driven `sin()` and Perlin `noise()` values so that the scene never freezes.
+* **Modular classes** – `NoiseBlob`, `Radiant`, `Hole`, and `Spark` each own an `update()` and `show()` method; clear separation makes later extensions trivial.
 
 ---
 
-## 6 Implementation Overview
+## Differences from group baseline
 
-```text
-preload()       → loadSound()
-setup()         → createCanvas • init FFT, Amplitude, PeakDetect
-draw()          → analyseAudio()
-                   ├─ updateNoiseBlobs()  (size & hue ↔ energy/centroid)
-                   ├─ updateRadiants()    (rotation & length)
-                   ├─ updateSparks()      (density & tails)
-                   ├─ renderFlash()       (alpha decay)
-windowResized() → recalculate scale & offset
+| Aspect            | Group baseline (static demo) | My individual submission                                         |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------- |
+| Audio integration | None                         | Real‑time FFT, amplitude & peak analysis map directly to visuals |
+| Interaction       | Fixed 900×900 canvas         | Auto‑scales to any screen; full‑screen immersive mode            |
+| Visual depth      | Single layer                 | Multi‑layered buffers with additive bloom & background texture   |
+| Motion logic      | Timer‑based loops            | Sound‑driven + tempo‑noise hybrid for continuous motion          |
+| Code architecture | Single sketch file           | ES6 classes with JSDoc comments for each element                 |
+
+---
+
+## External references / techniques
+
+| Technique     | Source & link                                                                                            | How it was adapted                                                                                                                          |   |
+| ------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | - |
+| p5.PeakDetect | [https://p5js.org/reference/p5.sound/p5.PeakDetect/](https://p5js.org/reference/p5.sound/p5.PeakDetect/) | Used to trigger a flash overlay: when a peak is detected `flashAlpha` is set and a white rectangle fades out, creating beat‑synced flashes. |   |
+|               |                                                                                                          |                                                                                                                                             |   |
