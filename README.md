@@ -1,68 +1,78 @@
-# Audio-Driven Composition  
+# Audio-Responsive Fate Wheel: “Echoes of Time”
 
-## 1 Project Context
-This repository contains two *p5.js* sketches:
-
-| File | Purpose |
-|------|---------|
-| **`sketch (1).js`** | Group baseline—static, non-interactive visual. |
-| **`sketch.js`** | Individual extension—adds real-time audio analysis, multilayer animation, and responsive layout. |
-
-The extension explores how auditory data can govern procedural imagery, thereby translating musical structure into visual motion.
+A generative **p5.js** artwork that translates sound into motion, inspired by  
+Pacita Abad’s *Wheels of Fortune* and the meditative score **Clannad – “Town, Flow of Time, People.”**  
+The piece investigates how musical structure—pulse, pitch, energy—can animate visual metaphors of life-cycles, memory, and fate.
 
 ---
 
-## 2 Interaction Guide
-1. Open a local server (e.g., `python -m http.server 8000`) in the project root.  
-2. Navigate to `http://localhost:8000` in any modern browser.  
-3. Click **Play/Pause** to start or stop the soundtrack.  
-4. Resize the browser window— the canvas rescales automatically while preserving a 1 : 1 aspect ratio.
+## 1 Interaction Instructions
+| Step | Action |
+|------|--------|
+| 1 | Open the project folder in **Visual Studio Code** (or any editor). |
+| 2 | Right-click **index.html → “Open with Live Server.”** |
+| 3 | Wait for the page to load; the canvas scales to the window. |
+| 4 | Click **Play / Pause** to start or stop the soundtrack. |
+| 5 | Observe how forms breathe, rotate, and shimmer in synchrony with the music. |
+
+No further input is required; the composition evolves autonomously.
 
 ---
 
-## 3 Individual Animation Concept
+## 2 Individual Animation Approach
 
-### 3.1 Motivation
-As a lifelong music enthusiast, I wished to let sound “paint” the canvas.  The chosen track, **Clannad – “Town, Flow of Time, People”**, aligns conceptually with the artwork *Wheels of Fortune*: both contemplate cyclical fate, temporal flux, and the quiet persistence of life.  By coupling spectral data to geometry, colour, and luminosity, the composition visualises these ideas in motion.
+### 2.1 Conceptual Rationale  
+I selected an **audio-driven** strategy because the chosen track mirrors Abad’s wheel motif: both explore cyclical destiny and temporal flow.  
+The music’s ethereal harp lines and slow tempo suggested a visual language of **smooth rotation, gradual colour shifts, and pulse-triggered flashes**.
 
-### 3.2 Music–Artwork Resonance  
-*Town, Flow of Time, People* bears a slow, contemplative tempo.  Ethereal harp, flowing woodwinds, and ambient pads evoke gentle inevitability—the very sentiment embedded in *Wheels of Fortune*.  My animation echoes this by:
+### 2.2 Audio → Visual Mapping
 
-* **Smooth, unhurried global rotation** → passage of time.  
-* **Subtle hue shifts** → changing yet recurring destinies.  
-* **Pulse-driven flashes** → pivotal moments on fortune’s wheel.
+| Visual Layer | Audio Feature (p5.js) | Controlled Property | Interpretive Aim |
+|--------------|-----------------------|---------------------|------------------|
+| Global flash | `PeakDetect` (200–2000 Hz) | Frame-wide alpha | Accentuate decisive “turns of fate.” |
+| Noise Blobs  | Mid-band energy & spectral centroid | Radius, hue, brightness | Convey breathing life-force; higher pitch → lighter, brighter. |
+| Radiant spokes | Spectral centroid & energy | Angular velocity, spoke length | Wheel accelerates with pitch, expands with power. |
+| Spark dust | Overall amplitude | Spawn density, tail length | Represent transient memories; crescendos → star showers. |
+| Colour wash | Spectral centroid | Blue→Gold filter opacity | Evoke emotional temperature across the score. |
 
----
-
-## 4 Animated Properties and Differentiation
-
-| Visual Layer | Audio Feature | Parameter(s) Controlled | Distinction from Other Members |
-|--------------|---------------|-------------------------|--------------------------------|
-| **Global Flash** | Peak detection (200–2000 Hz) | Alpha → 0 – 100 | Only my version uses frame-wide white flashes to mark drum hits. |
-| **Noise Blobs** | Mid-band energy & spectral centroid | Radius, hue, brightness | Others adjust blob size only; I couple both size and colour to pitch. |
-| **Radiant Spokes** | Spectral centroid & mid-band energy | Angular velocity, spoke length | My spokes accelerate with higher pitch, whereas peers alter colour. |
-| **Spark Particles** | Amplitude & centroid | Spawn probability, tail length | Peers use static particles; mine grow dense and leave trails in climaxes. |
-| **Colour Wash** | Spectral centroid | Blue → gold filter opacity | Unique global tint responsive to melodic register. |
+These mappings differ markedly from other group members, who focus chiefly on **size modulation** or **component reveal**; my version couples *multiple* auditory metrics to *multiple* graphical dimensions, resulting in a richer synaesthetic correspondence.
 
 ---
 
-## 5 Inspirational References  
-| Reference | Type | Influence |
-|-----------|------|-----------|
-| ![Generative wheel](docs/reference-wheel.gif) | GIF | Suggested radial spoke metaphor for destiny. |
-| ![Harp shimmer](docs/reference-harp.jpg) | Still | Guided choice of soft gold-pink palette. |
-| ![Audio-reactive nebula](docs/reference-nebula.gif) | GIF tutorial | Introduced additive blending for spark trails. |
+## 3 Inspirational References
+| Source | Relevance |
+|--------|-----------|
+| Yayoi Kusama’s polka-dot environments | Repetition and infinity motifs informed the dotted halo rings. |
+| Pacita Abad, *Wheels of Fortune* (1994) | Radial composition and layered chroma guided the spoke system. |
+| Audio-reactive nebula tutorial (Coding Train, 2023) | Introduced additive blending for luminous particle tails. |
+
+*Thumbnail imagery and links are embedded in the code comments for citation.*
 
 ---
 
-## 6 Implementation Overview
+## 4 Technical Implementation Highlights
 
-```text
-preload()       → loadSound()
-setup()         → createCanvas • init FFT, Amplitude, PeakDetect
-draw()          → analyseAudio()
-                   ├─ updateNoiseBlobs()  (size & hue ↔ energy/centroid)
-                   ├─ updateRadiants()    (rotation & length)
-                   ├─ updateSparks()      (density & tails)
-                   ├─ renderFlash()       (alpha decay)
-windowResized() → recalculate scale & offset
+* **Audio pipeline:** `p5.FFT`, `p5.Amplitude`, and `p5.PeakDetect` extract spectral centroid, mid-band energy, overall level, and transient peaks each frame.  
+* **Modular classes:** `NoiseBlob`, `Radiant`, `Spark`, and `FlashLayer` each expose `update()` / `render()` methods, ensuring extensibility.  
+* **Responsive layout:** `calculateScale()` plus `windowResized()` enforce a 1 : 1 stage that centres and scales on any device.  
+* **Additive compositing:** `globalCompositeOperation = "lighter"` simulates luminous overlays without colour clipping.  
+* **Code commentary:** Every non-trivial block includes academic-style documentation; external techniques are acknowledged inline.
+
+---
+
+## 5 External Tools and Borrowed Techniques
+| Technique | Origin | Integration Rationale |
+|-----------|--------|-----------------------|
+| Additive blending | MDN Canvas docs | Required for believable glow of overlapping particles. |
+| Particle tail logic | Coding Train “Fireworks” example | Adapted to lengthen with spectral centroid, creating pitch-sensitive trails. |
+| Responsive scaling pattern | p5.js `resizeCanvas` reference | Ensures exhibition-ready behaviour across screens. |
+
+Hyperlinks to each source are placed directly in the relevant comment blocks.
+
+---
+
+## 6 Summary
+*“Echoes of Time”* fuses **real-time audio analysis** with **procedural graphics** to craft a kinetic meditation on cycles of fortune. By orchestrating energy, pitch, and rhythm into layered visual transformations, the piece aspires to make the **inaudible architecture of music** perceptible and poetically resonant with Abad’s wheel of destiny.
+
+> *“Towns fade, people change, yet the essence of life quietly endures.”*  
+> The animation renders this idea visible—ever turning, ever luminous, ever reborn.
